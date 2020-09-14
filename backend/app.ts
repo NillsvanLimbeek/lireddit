@@ -18,6 +18,7 @@ const main = async () => {
     const apolloServer = new ApolloServer({
         typeDefs,
         resolvers,
+        context: () => ({ db: orm }),
     });
 
     apolloServer.applyMiddleware({ app, path: '/api' });
