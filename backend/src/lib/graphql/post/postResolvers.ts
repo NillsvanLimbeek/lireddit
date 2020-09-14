@@ -1,13 +1,9 @@
 import { IResolvers } from 'apollo-server-express';
 
-import { Database } from '../types';
-import { Post } from '../entities/Post';
+import { CTX } from '../../types';
+import { Post } from '../../entities/Post';
 
-interface CTX {
-    db: Database;
-}
-
-export const resolvers: IResolvers = {
+export const postResolvers: IResolvers = {
     Query: {
         posts: async (
             _root: void,

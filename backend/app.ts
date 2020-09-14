@@ -2,8 +2,7 @@ import express from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ApolloServer } from 'apollo-server-express';
 
-import { resolvers } from './src/lib/graphql/resolvers';
-import { typeDefs } from './src/lib/graphql/typeDefs';
+import { schema } from './src/lib/graphql';
 
 import mikroConfig from './src/mikro-orm.config';
 
@@ -16,8 +15,7 @@ const main = async () => {
 
     // setup graphql
     const apolloServer = new ApolloServer({
-        typeDefs,
-        resolvers,
+        schema,
         context: () => ({ db: orm }),
     });
 

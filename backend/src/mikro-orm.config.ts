@@ -2,7 +2,7 @@ import path from 'path';
 import { MikroORM } from '@mikro-orm/core';
 
 import { __prod__ } from './lib/constants';
-import { Post } from './lib/entities/Post';
+import { Post, User } from './lib/entities';
 
 const mikroConfig: Parameters<typeof MikroORM.init>[0] = {
     migrations: {
@@ -11,7 +11,7 @@ const mikroConfig: Parameters<typeof MikroORM.init>[0] = {
     },
     dbName: 'lireddit',
     type: 'postgresql',
-    entities: [Post],
+    entities: [Post, User],
     debug: !__prod__,
 };
 
