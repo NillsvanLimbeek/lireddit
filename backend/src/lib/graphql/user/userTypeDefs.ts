@@ -12,4 +12,9 @@ export const userTypeDefs = gql`
         username: String!
         password: String!
     }
+
+    type UserResponse {
+        errors: [FieldError]
+        user: User
+    }
 `;
