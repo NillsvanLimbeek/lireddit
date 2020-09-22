@@ -1,9 +1,10 @@
 import express from 'express';
-import { MikroORM } from '@mikro-orm/core';
-import { ApolloServer } from 'apollo-server-express';
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
+import cors from 'cors';
+import { MikroORM } from '@mikro-orm/core';
+import { ApolloServer } from 'apollo-server-express';
 
 import { schema } from './src/lib/graphql';
 import { __prod__ } from './src/lib/constants';
@@ -19,6 +20,14 @@ const main = async () => {
     orm.getMigrator().up();
 
     const app = express();
+
+    // cors
+    app.use(
+        cors({
+            origin: 'http://localhost:3000',
+            credentials: true,
+        })
+    );
 
     // cookies
     app.use(
@@ -46,7 +55,11 @@ const main = async () => {
         context: ({ req, res }) => ({ db: orm, req, res }),
     });
 
-    apolloServer.applyMiddleware({ app, path: '/api' });
+    apolloServer.applyMiddleware({
+        app,
+        path: '/api',
+        cors: false,
+    });
 
     // start server
     app.set('port', process.env.PORT || 5000);
