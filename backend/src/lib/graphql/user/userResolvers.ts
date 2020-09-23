@@ -39,7 +39,7 @@ export const userResolvers: IResolvers = {
         register: async (
             _root: void,
             { input }: RegisterUser,
-            { db }: CTX
+            { db, req }: CTX
         ): Promise<UserResponse> => {
             let response: UserResponse = {};
 
@@ -87,6 +87,8 @@ export const userResolvers: IResolvers = {
             }
 
             response = { user };
+            req.session.userId = user.id;
+
             return response;
         },
 
