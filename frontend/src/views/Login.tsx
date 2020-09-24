@@ -3,40 +3,40 @@ import { useHistory } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import { Button, Flex, Box } from 'rebass';
 
-import {
-    FieldError,
-    useRegisterMutation,
-} from '../lib/graphql/generated/graphql';
+import { FieldError, useLoginMutation } from '../lib/graphql/generated/graphql';
 import { toErrorMap } from '../lib/utils';
 
 import { InputField } from '../components/InputField';
 
 interface Register {
-    username: string;
     password: string;
+    username: string;
 }
 
-export const Register = () => {
-    const [register] = useRegisterMutation();
+export const Login = () => {
+    const [login] = useLoginMutation({ refetchQueries: ['Me'] });
     const history = useHistory();
+
+    const handleSubmit = async (values: Register, setErrors: any) => {
+        const res = await login({
+            variables: { input: values },
+        });
+
+        if (res.data?.login?.errors) {
+            const errors = res.data.login.errors as FieldError[];
+            setErrors(toErrorMap(errors));
+        } else if (res.data?.login?.user) {
+            history.push('/');
+        }
+    };
 
     return (
         <Flex justifyContent={'center'}>
             <Box width={400}>
                 <Formik
                     initialValues={{ username: '', password: '' }}
-                    onSubmit={async (values, { setErrors }) => {
-                        const res = await register({
-                            variables: { input: values },
-                        });
-
-                        if (res.data?.register?.errors) {
-                            const errors = res.data.register
-                                .errors as FieldError[];
-                            setErrors(toErrorMap(errors));
-                        } else if (res.data?.register?.user) {
-                            history.push('/');
-                        }
+                    onSubmit={(values, { setErrors }) => {
+                        handleSubmit(values, setErrors);
                     }}
                 >
                     {() => (
@@ -56,7 +56,7 @@ export const Register = () => {
                             />
 
                             <Button variant="primary" type="submit">
-                                Register
+                                Login
                             </Button>
                         </Form>
                     )}

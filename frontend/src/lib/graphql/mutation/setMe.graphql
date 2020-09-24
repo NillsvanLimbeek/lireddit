@@ -1,0 +1,6 @@
+mutation setMe {
+    setMe {
+        id
+        username
+    }
+}

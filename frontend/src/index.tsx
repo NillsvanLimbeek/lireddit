@@ -8,7 +8,7 @@ import { App } from './App';
 
 const client = new ApolloClient({
     uri: 'http://localhost:5000/api',
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({}),
     credentials: 'include',
 });
 

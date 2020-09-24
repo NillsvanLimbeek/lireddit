@@ -8,7 +8,7 @@ export const userTypeDefs = gql`
         username: String
     }
 
-    input RegisterInput {
+    input UsernamePasswordInput {
         username: String!
         password: String!
     }

@@ -125,5 +125,16 @@ export const userResolvers: IResolvers = {
             response = { user };
             return response;
         },
+
+        setMe: async (
+            _root: void,
+            _args: void,
+            { db, req }: CTX
+        ): Promise<User | null> => {
+            if (!req.session.userId) return null;
+
+            const user = await db.em.findOne(User, { id: req.session.userId });
+            return user;
+        },
     },
 };
