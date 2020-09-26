@@ -1,5 +1,0 @@
-mutation setMe {
-    setMe {
-        ...UserFragment
-    }
-}

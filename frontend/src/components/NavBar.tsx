@@ -1,15 +1,19 @@
 import React from 'react';
-import { Flex, Box, Text } from 'rebass';
 
 import { Link } from '../components/Link';
-import { useMeQuery } from '../lib/graphql/generated/graphql';
+import {
+    useLogoutMutation,
+    useMeQuery,
+} from '../lib/graphql/generated/graphql';
 
 export const NavBar = () => {
     const { data, loading } = useMeQuery();
+    const [logout] = useLogoutMutation({ refetchQueries: ['Me'] });
+
     let body;
 
     if (loading) {
-        body = <Text>Loading...</Text>;
+        body = <p>Loading...</p>;
     } else if (!data?.me) {
         body = (
             <>
@@ -20,24 +24,15 @@ export const NavBar = () => {
     } else {
         body = (
             <>
-                <Text>{data.me.username}</Text>
+                <p className="mr-3 capitalize">{data.me.username}</p>
+                <button onClick={() => logout()}>Logout</button>
             </>
         );
     }
 
     return (
-        <Flex>
-            <Box
-                sx={{
-                    width: '100%',
-                    bg: 'tomato',
-                    p: 3,
-                    mb: 3,
-                    display: 'flex',
-                }}
-            >
-                {body}
-            </Box>
-        </Flex>
+        <nav className="flex w-screen p-4 bg-blue-400">
+            <div className="flex justify-end w-screen">{body}</div>
+        </nav>
     );
 };

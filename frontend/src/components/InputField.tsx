@@ -1,7 +1,9 @@
 import React, { InputHTMLAttributes } from 'react';
 import { useField } from 'formik';
-import { Box, Text } from 'rebass';
-import { Label, Input } from '@rebass/forms';
+
+// classes
+const inputClass = `border border-gray-500 py-1 px-2 rounded-sm`;
+const errorClass = `border border-red-500 py-1 px-2 rounded-sm`;
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
     name: string;
@@ -13,21 +15,19 @@ export const InputField = (props: Props) => {
     const [field, { error }] = useField(props);
 
     return (
-        <Box mb={3}>
-            <Label htmlFor={field.name} mb={2}>
+        <div className="flex flex-col mb-3">
+            <label htmlFor={field.name} className="mb-1 font-light">
                 {props.label}
-            </Label>
-            <Input
+            </label>
+
+            <input
                 {...field}
                 {...props}
                 id={field.name}
                 placeholder={props.placeholder}
+                className={error ? errorClass : inputClass}
             />
-            {error && (
-                <Text color={'red'} fontSize={1}>
-                    {error}
-                </Text>
-            )}
-        </Box>
+            {error && <p className="text-red-600 text-xs opacity-0">{error}</p>}
+        </div>
     );
 };

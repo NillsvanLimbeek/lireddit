@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, Formik } from 'formik';
-import { Button, Flex, Box } from 'rebass';
 
 import { FieldError, useLoginMutation } from '../lib/graphql/generated/graphql';
 import { toErrorMap } from '../lib/utils';
@@ -31,37 +30,33 @@ export const Login = () => {
     };
 
     return (
-        <Flex justifyContent={'center'}>
-            <Box width={400}>
-                <Formik
-                    initialValues={{ username: '', password: '' }}
-                    onSubmit={(values, { setErrors }) => {
-                        handleSubmit(values, setErrors);
-                    }}
-                >
-                    {() => (
-                        <Form>
-                            <InputField
-                                type="text"
-                                name="username"
-                                label="Username"
-                                placeholder="Username"
-                            />
+        <Formik
+            initialValues={{ username: '', password: '' }}
+            onSubmit={(values, { setErrors }) => {
+                handleSubmit(values, setErrors);
+            }}
+        >
+            {() => (
+                <Form className="w-1/3 mx-auto mt-8">
+                    <InputField
+                        type="text"
+                        name="username"
+                        label="Username"
+                        placeholder="Username"
+                    />
 
-                            <InputField
-                                name="password"
-                                label="Password"
-                                placeholder="Password"
-                                type="password"
-                            />
+                    <InputField
+                        name="password"
+                        label="Password"
+                        placeholder="Password"
+                        type="password"
+                    />
 
-                            <Button variant="primary" type="submit">
-                                Login
-                            </Button>
-                        </Form>
-                    )}
-                </Formik>
-            </Box>
-        </Flex>
+                    <button type="submit" className="py-2 bg-blue-400 w-full">
+                        Login
+                    </button>
+                </Form>
+            )}
+        </Formik>
     );
 };

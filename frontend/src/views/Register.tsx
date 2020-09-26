@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, Formik } from 'formik';
-import { Button, Flex, Box } from 'rebass';
 
 import {
     FieldError,
@@ -21,47 +20,40 @@ export const Register = () => {
     const history = useHistory();
 
     return (
-        <Flex justifyContent={'center'}>
-            <Box width={400}>
-                <Formik
-                    initialValues={{ username: '', password: '' }}
-                    onSubmit={async (values, { setErrors }) => {
-                        const res = await register({
-                            variables: { input: values },
-                        });
+        <Formik
+            initialValues={{ username: '', password: '' }}
+            onSubmit={async (values, { setErrors }) => {
+                const res = await register({
+                    variables: { input: values },
+                });
 
-                        if (res.data?.register?.errors) {
-                            const errors = res.data.register
-                                .errors as FieldError[];
-                            setErrors(toErrorMap(errors));
-                        } else if (res.data?.register?.user) {
-                            history.push('/');
-                        }
-                    }}
-                >
-                    {() => (
-                        <Form>
-                            <InputField
-                                type="text"
-                                name="username"
-                                label="Username"
-                                placeholder="Username"
-                            />
+                if (res.data?.register?.errors) {
+                    const errors = res.data.register.errors as FieldError[];
+                    setErrors(toErrorMap(errors));
+                } else if (res.data?.register?.user) {
+                    history.push('/');
+                }
+            }}
+        >
+            {() => (
+                <Form>
+                    <InputField
+                        type="text"
+                        name="username"
+                        label="Username"
+                        placeholder="Username"
+                    />
 
-                            <InputField
-                                name="password"
-                                label="Password"
-                                placeholder="Password"
-                                type="password"
-                            />
+                    <InputField
+                        name="password"
+                        label="Password"
+                        placeholder="Password"
+                        type="password"
+                    />
 
-                            <Button variant="primary" type="submit">
-                                Register
-                            </Button>
-                        </Form>
-                    )}
-                </Formik>
-            </Box>
-        </Flex>
+                    <button type="submit">Register</button>
+                </Form>
+            )}
+        </Formik>
     );
 };
