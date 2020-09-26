@@ -1,3 +1,4 @@
+import { COOKIE_NAME } from './../../constants';
 import { IResolvers } from 'apollo-server-express';
 import argon2 from 'argon2';
 
@@ -126,15 +127,23 @@ export const userResolvers: IResolvers = {
             return response;
         },
 
-        setMe: async (
+        logout: (
             _root: void,
             _args: void,
-            { db, req }: CTX
-        ): Promise<User | null> => {
-            if (!req.session.userId) return null;
+            { req, res }: CTX
+        ): Promise<boolean> => {
+            return new Promise((resolve) => {
+                req.session.destroy((error) => {
+                    if (error) {
+                        console.error(error);
+                        resolve(false);
+                        return;
+                    }
 
-            const user = await db.em.findOne(User, { id: req.session.userId });
-            return user;
+                    res.clearCookie(COOKIE_NAME);
+                    resolve(true);
+                });
+            });
         },
     },
 };

@@ -1,6 +1,5 @@
 mutation setMe {
     setMe {
-        id
-        username
+        ...UserFragment
     }
 }

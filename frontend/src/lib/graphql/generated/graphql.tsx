@@ -93,6 +93,11 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
+export type UserFragmentFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'username'>
+);
+
 export type LoginMutationVariables = Exact<{
   input: UsernamePasswordInput;
 }>;
@@ -107,7 +112,7 @@ export type LoginMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>>>, user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & UserFragmentFragment
     )> }
   )> }
 );
@@ -126,7 +131,7 @@ export type RegisterMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>>>, user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & UserFragmentFragment
     )> }
   )> }
 );
@@ -138,7 +143,7 @@ export type SetMeMutation = (
   { __typename?: 'Mutation' }
   & { setMe?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+    & UserFragmentFragment
   )> }
 );
 
@@ -149,11 +154,16 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+    & UserFragmentFragment
   )> }
 );
 
-
+export const UserFragmentFragmentDoc = gql`
+    fragment UserFragment on User {
+  id
+  username
+}
+    `;
 export const LoginDocument = gql`
     mutation Login($input: UsernamePasswordInput!) {
   login(input: $input) {
@@ -162,12 +172,11 @@ export const LoginDocument = gql`
       message
     }
     user {
-      id
-      username
+      ...UserFragment
     }
   }
 }
-    `;
+    ${UserFragmentFragmentDoc}`;
 export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
 
 /**
@@ -201,12 +210,11 @@ export const RegisterDocument = gql`
       message
     }
     user {
-      id
-      username
+      ...UserFragment
     }
   }
 }
-    `;
+    ${UserFragmentFragmentDoc}`;
 export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
 
 /**
@@ -235,11 +243,10 @@ export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutatio
 export const SetMeDocument = gql`
     mutation setMe {
   setMe {
-    id
-    username
+    ...UserFragment
   }
 }
-    `;
+    ${UserFragmentFragmentDoc}`;
 export type SetMeMutationFn = Apollo.MutationFunction<SetMeMutation, SetMeMutationVariables>;
 
 /**
@@ -267,11 +274,10 @@ export type SetMeMutationOptions = Apollo.BaseMutationOptions<SetMeMutation, Set
 export const MeDocument = gql`
     query Me {
   me {
-    id
-    username
+    ...UserFragment
   }
 }
-    `;
+    ${UserFragmentFragmentDoc}`;
 
 /**
  * __useMeQuery__
