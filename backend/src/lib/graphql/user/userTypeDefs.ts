@@ -6,9 +6,16 @@ export const userTypeDefs = gql`
         createdAd: String
         updatedAt: String
         username: String
+        email: String
     }
 
-    input UsernamePasswordInput {
+    input RegisterInput {
+        username: String!
+        email: String!
+        password: String!
+    }
+
+    input LoginInput {
         username: String!
         password: String!
     }

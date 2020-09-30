@@ -12,36 +12,48 @@ import { InputField } from '../components/InputField';
 
 interface Register {
     username: string;
+    email: string;
     password: string;
 }
 
 export const Register = () => {
-    const [register] = useRegisterMutation();
+    const [register] = useRegisterMutation({ refetchQueries: ['Me'] });
     const history = useHistory();
+
+    const handleSubmit = async (values: Register, setErrors: any) => {
+        const res = await register({
+            variables: { input: values },
+        });
+
+        if (res.data?.register?.errors) {
+            const errors = res.data.register.errors as FieldError[];
+            setErrors(toErrorMap(errors));
+        } else if (res.data?.register?.user) {
+            history.push('/');
+        }
+    };
 
     return (
         <Formik
-            initialValues={{ username: '', password: '' }}
-            onSubmit={async (values, { setErrors }) => {
-                const res = await register({
-                    variables: { input: values },
-                });
-
-                if (res.data?.register?.errors) {
-                    const errors = res.data.register.errors as FieldError[];
-                    setErrors(toErrorMap(errors));
-                } else if (res.data?.register?.user) {
-                    history.push('/');
-                }
+            initialValues={{ username: '', password: '', email: '' }}
+            onSubmit={(values, { setErrors }) => {
+                handleSubmit(values, setErrors);
             }}
         >
             {() => (
-                <Form>
+                <Form className="w-1/3 mx-auto mt-8">
                     <InputField
                         type="text"
                         name="username"
                         label="Username"
                         placeholder="Username"
+                    />
+
+                    <InputField
+                        type="text"
+                        name="email"
+                        label="Email"
+                        placeholder="Email"
                     />
 
                     <InputField
@@ -51,7 +63,9 @@ export const Register = () => {
                         type="password"
                     />
 
-                    <button type="submit">Register</button>
+                    <button type="submit" className="py-2 bg-blue-400 w-full">
+                        Register
+                    </button>
                 </Form>
             )}
         </Formik>

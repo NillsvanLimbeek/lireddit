@@ -42,12 +42,12 @@ export type Mutation = {
 
 
 export type MutationRegisterArgs = {
-  input: UsernamePasswordInput;
+  input: RegisterInput;
 };
 
 
 export type MutationLoginArgs = {
-  input: UsernamePasswordInput;
+  input: LoginInput;
 };
 
 
@@ -80,9 +80,16 @@ export type User = {
   createdAd?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
   username?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
 };
 
-export type UsernamePasswordInput = {
+export type RegisterInput = {
+  username: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type LoginInput = {
   username: Scalars['String'];
   password: Scalars['String'];
 };
@@ -99,7 +106,7 @@ export type UserFragmentFragment = (
 );
 
 export type LoginMutationVariables = Exact<{
-  input: UsernamePasswordInput;
+  input: LoginInput;
 }>;
 
 
@@ -126,7 +133,7 @@ export type LogoutMutation = (
 );
 
 export type RegisterMutationVariables = Exact<{
-  input: UsernamePasswordInput;
+  input: RegisterInput;
 }>;
 
 
@@ -162,7 +169,7 @@ export const UserFragmentFragmentDoc = gql`
 }
     `;
 export const LoginDocument = gql`
-    mutation Login($input: UsernamePasswordInput!) {
+    mutation Login($input: LoginInput!) {
   login(input: $input) {
     errors {
       field
@@ -229,7 +236,7 @@ export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const RegisterDocument = gql`
-    mutation Register($input: UsernamePasswordInput!) {
+    mutation Register($input: RegisterInput!) {
   register(input: $input) {
     errors {
       field

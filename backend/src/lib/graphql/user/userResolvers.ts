@@ -1,18 +1,10 @@
-import { COOKIE_NAME } from './../../constants';
 import { IResolvers } from 'apollo-server-express';
 import argon2 from 'argon2';
 
-import { CTX, FieldError } from '../../types';
+import { CTX, RegisterUser, UserResponse, LoginUser } from '../../types';
 import { User } from '../../entities';
-
-interface RegisterUser {
-    input: { username: string; password: string };
-}
-
-interface UserResponse {
-    errors?: FieldError[];
-    user?: User;
-}
+import { registerValidation } from '../../utils';
+import { COOKIE_NAME } from './../../constants';
 
 export const userResolvers: IResolvers = {
     Query: {
@@ -47,30 +39,13 @@ export const userResolvers: IResolvers = {
             const hashedPassword = await argon2.hash(input.password);
             const user = await db.em.create(User, {
                 username: input.username,
+                email: input.email,
                 password: hashedPassword,
             });
 
-            if (input.username.length <= 2) {
-                return (response = {
-                    errors: [
-                        {
-                            field: 'username',
-                            message: 'username should be at least 2 characters',
-                        },
-                    ],
-                });
-            }
+            const validation = registerValidation({ input });
 
-            if (input.password.length <= 3) {
-                return (response = {
-                    errors: [
-                        {
-                            field: 'password',
-                            message: 'password should be at least 3 characters',
-                        },
-                    ],
-                });
-            }
+            if (validation.errors) return validation;
 
             try {
                 await db.em.persistAndFlush(user);
@@ -95,7 +70,7 @@ export const userResolvers: IResolvers = {
 
         login: async (
             _root: void,
-            { input }: RegisterUser,
+            { input }: LoginUser,
             { db, req }: CTX
         ): Promise<UserResponse> => {
             let response: UserResponse = {};

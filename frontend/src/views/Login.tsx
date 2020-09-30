@@ -7,7 +7,7 @@ import { toErrorMap } from '../lib/utils';
 
 import { InputField } from '../components/InputField';
 
-interface Register {
+interface Login {
     password: string;
     username: string;
 }
@@ -16,7 +16,7 @@ export const Login = () => {
     const [login] = useLoginMutation({ refetchQueries: ['Me'] });
     const history = useHistory();
 
-    const handleSubmit = async (values: Register, setErrors: any) => {
+    const handleSubmit = async (values: Login, setErrors: any) => {
         const res = await login({
             variables: { input: values },
         });

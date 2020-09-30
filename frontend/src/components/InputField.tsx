@@ -27,7 +27,7 @@ export const InputField = (props: Props) => {
                 placeholder={props.placeholder}
                 className={error ? errorClass : inputClass}
             />
-            {error && <p className="text-red-600 text-xs opacity-0">{error}</p>}
+            {error && <p className="text-red-600 text-xs">{error}</p>}
         </div>
     );
 };
