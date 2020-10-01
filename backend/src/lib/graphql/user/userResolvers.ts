@@ -36,16 +36,15 @@ export const userResolvers: IResolvers = {
         ): Promise<UserResponse> => {
             let response: UserResponse = {};
 
+            const errors = registerValidation({ input });
+            if (errors) return { errors };
+
             const hashedPassword = await argon2.hash(input.password);
             const user = await db.em.create(User, {
                 username: input.username,
                 email: input.email,
                 password: hashedPassword,
             });
-
-            const validation = registerValidation({ input });
-
-            if (validation.errors) return validation;
 
             try {
                 await db.em.persistAndFlush(user);

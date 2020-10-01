@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik';
 
 import { FieldError, useLoginMutation } from '../lib/graphql/generated/graphql';
 import { toErrorMap } from '../lib/utils';
+import { SetErrors } from '../lib/types';
 
 import { InputField } from '../components/InputField';
 
@@ -16,7 +17,7 @@ export const Login = () => {
     const [login] = useLoginMutation({ refetchQueries: ['Me'] });
     const history = useHistory();
 
-    const handleSubmit = async (values: Login, setErrors: any) => {
+    const handleSubmit = async (values: Login, setErrors: SetErrors<Login>) => {
         const res = await login({
             variables: { input: values },
         });

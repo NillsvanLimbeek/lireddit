@@ -7,6 +7,7 @@ import {
     useRegisterMutation,
 } from '../lib/graphql/generated/graphql';
 import { toErrorMap } from '../lib/utils';
+import { SetErrors } from '../lib/types';
 
 import { InputField } from '../components/InputField';
 
@@ -20,7 +21,10 @@ export const Register = () => {
     const [register] = useRegisterMutation({ refetchQueries: ['Me'] });
     const history = useHistory();
 
-    const handleSubmit = async (values: Register, setErrors: any) => {
+    const handleSubmit = async (
+        values: Register,
+        setErrors: SetErrors<Register>
+    ) => {
         const res = await register({
             variables: { input: values },
         });
