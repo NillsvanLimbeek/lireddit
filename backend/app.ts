@@ -1,5 +1,5 @@
 import express from 'express';
-import redis from 'redis';
+import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
@@ -12,7 +12,7 @@ import { __prod__ } from './src/lib/constants';
 import mikroConfig from './src/mikro-orm.config';
 
 const RedisStore = connectRedis(session);
-const redisClient = redis.createClient();
+const redis = new Redis();
 
 const main = async () => {
     // connect db
@@ -34,7 +34,7 @@ const main = async () => {
         session({
             name: 'qid',
             store: new RedisStore({
-                client: redisClient,
+                client: redis,
                 disableTTL: true,
             }),
             cookie: {
@@ -52,7 +52,7 @@ const main = async () => {
     // setup graphql
     const apolloServer = new ApolloServer({
         schema,
-        context: ({ req, res }) => ({ db: orm, req, res }),
+        context: ({ req, res }) => ({ db: orm, req, res, redis }),
     });
 
     apolloServer.applyMiddleware({

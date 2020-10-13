@@ -1,10 +1,11 @@
 import { IResolvers } from 'apollo-server-express';
 import argon2 from 'argon2';
+import { v4 } from 'uuid';
 
 import { CTX, RegisterUser, UserResponse, LoginUser } from '../../types';
 import { User } from '../../entities';
-import { registerValidation } from '../../utils';
-import { COOKIE_NAME } from './../../constants';
+import { registerValidation, sendEmail } from '../../utils';
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from './../../constants';
 
 export const userResolvers: IResolvers = {
     Query: {
@@ -118,6 +119,74 @@ export const userResolvers: IResolvers = {
                     resolve(true);
                 });
             });
+        },
+
+        forgotPassword: async (
+            _root: void,
+            { email }: { email: string },
+            { db, redis }: CTX
+        ) => {
+            const user = await db.em.findOne(User, { email });
+
+            // if no email was found, do nothing
+            if (!user) return true;
+
+            const token = v4();
+            await redis.set(
+                FORGOT_PASSWORD_PREFIX + token,
+                user.id,
+                'ex',
+                1000 * 60 * 60 * 3
+            ); // 3 days to reset password
+
+            sendEmail(
+                user.email,
+                `<a href="http://localhost:3000/forgot-password/${token}">Reset password</a>`
+            );
+
+            return true;
+        },
+
+        changePassword: async (
+            _root: void,
+            { token, newPassword }: { token: string; newPassword: string },
+            { redis, db, req }: CTX
+        ): Promise<UserResponse> => {
+            if (newPassword.length <= 2) {
+                return {
+                    errors: [
+                        {
+                            field: 'password',
+                            message: 'password should be at least 3 characters',
+                        },
+                    ],
+                };
+            }
+
+            const userId = await redis.get(FORGOT_PASSWORD_PREFIX + token);
+
+            if (!userId) {
+                return {
+                    errors: [{ field: 'token', message: 'token expired' }],
+                };
+            }
+
+            const user = await db.em.findOne(User, { id: parseInt(userId) });
+
+            if (!user) {
+                return {
+                    errors: [
+                        { field: 'token', message: 'user no longer exists' },
+                    ],
+                };
+            }
+
+            user.password = await argon2.hash(newPassword);
+            db.em.persistAndFlush(user);
+
+            req.session.userId = user.id;
+
+            return { user };
         },
     },
 };

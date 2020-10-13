@@ -18,6 +18,8 @@ export const typeDefs = gql`
         register(input: RegisterInput!): UserResponse
         login(input: LoginInput!): UserResponse
         logout: Boolean
+        forgotPassword(email: String!): Boolean
+        changePassword(newPassword: String!): UserResponse
 
         createPost(title: String): Post
         updatePost(id: Int!, title: String!): Post

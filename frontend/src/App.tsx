@@ -5,6 +5,7 @@ import { Home } from './views/Home';
 import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { NavBar } from './components/NavBar';
+import { ChangePassword } from './views/ChangePassword';
 
 import './tailwind.output.css';
 
@@ -15,6 +16,10 @@ export const App = () => {
                 <NavBar />
 
                 <Switch>
+                    <Route
+                        path="/forgot-password/:token"
+                        component={ChangePassword}
+                    />
                     <Route path="/register" component={Register} />
                     <Route path="/login" component={Login} />
                     <Route path="/" component={Home} />
