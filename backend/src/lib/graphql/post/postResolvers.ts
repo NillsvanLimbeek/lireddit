@@ -1,62 +1,50 @@
 import { IResolvers } from 'apollo-server-express';
 
-import { CTX } from '../../types';
 import { Post } from '../../entities/Post';
 
 export const postResolvers: IResolvers = {
     Query: {
-        posts: async (
-            _root: void,
-            _args: void,
-            { db }: CTX
-        ): Promise<Post[]> => {
-            return await db.em.find(Post, {});
+        posts: async (): Promise<Post[]> => {
+            return await Post.find();
         },
 
         post: async (
             _root: void,
-            { id }: { id: number },
-            { db }: CTX
-        ): Promise<Post | null> => {
-            return await db.em.findOne(Post, { id });
+            { id }: { id: number }
+        ): Promise<Post | undefined> => {
+            return await Post.findOne(id);
         },
     },
 
     Mutation: {
         createPost: async (
             _root: void,
-            { title }: { title: string },
-            { db }: CTX
+            { title }: { title: string }
         ): Promise<Post> => {
-            const post = await db.em.create(Post, { title });
-            db.em.persistAndFlush(post);
-
-            return post;
+            return await Post.create({ title }).save();
         },
 
         updatePost: async (
             _root: void,
-            { id, title }: { id: number; title: string },
-            { db }: CTX
-        ): Promise<Post | null> => {
-            const post = await db.em.findOne(Post, { id });
+            { id, title }: { id: number; title: string }
+        ): Promise<Post | undefined> => {
+            const post = await Post.findOne(id);
 
             if (!post) {
-                return null;
+                return undefined;
             }
 
             post.title = title;
-            await db.em.persistAndFlush(post);
+            await Post.update({ id }, { title });
 
             return post;
         },
 
         deletePost: async (
             _root: void,
-            { id }: { id: number },
-            { db }: CTX
+            { id }: { id: number }
         ): Promise<boolean> => {
-            await db.em.nativeDelete(Post, { id });
+            await Post.delete(id);
             return true;
         },
     },

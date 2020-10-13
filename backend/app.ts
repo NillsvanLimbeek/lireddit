@@ -3,22 +3,22 @@ import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
-import { MikroORM } from '@mikro-orm/core';
+import { createConnection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 
 import { schema } from './src/lib/graphql';
 import { __prod__ } from './src/lib/constants';
 
-import mikroConfig from './src/mikro-orm.config';
+import { config } from './src/typeorm.config';
 
 const RedisStore = connectRedis(session);
 const redis = new Redis();
 
 const main = async () => {
     // connect db
-    const orm = await MikroORM.init(mikroConfig);
-    orm.getMigrator().up();
+    await createConnection(config);
 
+    // express app
     const app = express();
 
     // cors
@@ -52,7 +52,7 @@ const main = async () => {
     // setup graphql
     const apolloServer = new ApolloServer({
         schema,
-        context: ({ req, res }) => ({ db: orm, req, res, redis }),
+        context: ({ req, res }) => ({ req, res, redis }),
     });
 
     apolloServer.applyMiddleware({

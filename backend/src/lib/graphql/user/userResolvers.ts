@@ -9,23 +9,18 @@ import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from './../../constants';
 
 export const userResolvers: IResolvers = {
     Query: {
-        users: async (
-            _root: void,
-            _args: void,
-            { db }: CTX
-        ): Promise<User[]> => {
-            return await db.em.find(User, {});
+        users: async (): Promise<User[]> => {
+            return await User.find();
         },
 
         me: async (
             _root: void,
             _arg: void,
-            { db, req }: CTX
-        ): Promise<User | null> => {
-            if (!req.session.userId) return null;
+            { req }: CTX
+        ): Promise<User | undefined> => {
+            if (!req.session.userId) return undefined;
 
-            const user = await db.em.findOne(User, { id: req.session.userId });
-            return user;
+            return await User.findOne({ id: req.session.userId });
         },
     },
 
@@ -33,7 +28,7 @@ export const userResolvers: IResolvers = {
         register: async (
             _root: void,
             { input }: RegisterUser,
-            { db, req }: CTX
+            { req }: CTX
         ): Promise<UserResponse> => {
             let response: UserResponse = {};
 
@@ -41,14 +36,14 @@ export const userResolvers: IResolvers = {
             if (errors) return { errors };
 
             const hashedPassword = await argon2.hash(input.password);
-            const user = await db.em.create(User, {
+            const user = await User.create({
                 username: input.username,
                 email: input.email,
                 password: hashedPassword,
             });
 
             try {
-                await db.em.persistAndFlush(user);
+                await User.save(user);
             } catch (err) {
                 if (err.code === '23505') {
                     return (response = {
@@ -71,10 +66,10 @@ export const userResolvers: IResolvers = {
         login: async (
             _root: void,
             { input }: LoginUser,
-            { db, req }: CTX
+            { req }: CTX
         ): Promise<UserResponse> => {
             let response: UserResponse = {};
-            const user = await db.em.findOne(User, {
+            const user = await User.findOne({
                 username: input.username,
             });
 
@@ -124,9 +119,9 @@ export const userResolvers: IResolvers = {
         forgotPassword: async (
             _root: void,
             { email }: { email: string },
-            { db, redis }: CTX
+            { redis }: CTX
         ) => {
-            const user = await db.em.findOne(User, { email });
+            const user = await User.findOne({ email });
 
             // if no email was found, do nothing
             if (!user) return true;
@@ -150,7 +145,7 @@ export const userResolvers: IResolvers = {
         changePassword: async (
             _root: void,
             { token, newPassword }: { token: string; newPassword: string },
-            { redis, db, req }: CTX
+            { redis, req }: CTX
         ): Promise<UserResponse> => {
             if (newPassword.length <= 2) {
                 return {
@@ -171,7 +166,7 @@ export const userResolvers: IResolvers = {
                 };
             }
 
-            const user = await db.em.findOne(User, { id: parseInt(userId) });
+            const user = await User.findOne({ id: parseInt(userId) });
 
             if (!user) {
                 return {
@@ -182,7 +177,7 @@ export const userResolvers: IResolvers = {
             }
 
             user.password = await argon2.hash(newPassword);
-            db.em.persistAndFlush(user);
+            User.save(user);
 
             req.session.userId = user.id;
 

@@ -1,4 +1,3 @@
-export * from './Database';
 export * from './Ctx';
 
 export * from './Post';
