@@ -21,7 +21,7 @@ export const typeDefs = gql`
         forgotPassword(email: String!): Boolean
         changePassword(newPassword: String!): UserResponse
 
-        createPost(title: String): Post
+        createPost(input: PostInput): Post
         updatePost(id: Int!, title: String!): Post
         deletePost(id: Int!): Boolean
     }

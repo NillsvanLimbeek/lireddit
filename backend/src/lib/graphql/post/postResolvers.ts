@@ -1,5 +1,8 @@
 import { IResolvers } from 'apollo-server-express';
 
+import { CTX } from './../../types/Ctx';
+import { PostInput } from './../../types/PostInput';
+
 import { Post } from '../../entities/Post';
 
 export const postResolvers: IResolvers = {
@@ -19,9 +22,17 @@ export const postResolvers: IResolvers = {
     Mutation: {
         createPost: async (
             _root: void,
-            { title }: { title: string }
+            { input }: PostInput,
+            { req }: CTX
         ): Promise<Post> => {
-            return await Post.create({ title }).save();
+            if (!req.session.userId) {
+                throw new Error('not authenticated');
+            }
+
+            return await Post.create({
+                ...input,
+                creatorId: req.session.userId,
+            }).save();
         },
 
         updatePost: async (

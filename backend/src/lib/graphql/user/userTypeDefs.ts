@@ -15,13 +15,13 @@ export const userTypeDefs = gql`
         password: String!
     }
 
-    input LoginInput {
-        username: String!
-        password: String!
-    }
-
     type UserResponse {
         errors: [FieldError]
         user: User
+    }
+
+    input LoginInput {
+        username: String!
+        password: String!
     }
 `;
