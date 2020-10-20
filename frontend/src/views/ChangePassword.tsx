@@ -1,8 +1,11 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
-import { FieldError } from '../lib/graphql/generated/graphql';
+import {
+    FieldError,
+    useChangePasswordMutation,
+} from '../lib/graphql/generated/graphql';
 import { SetErrors } from '../lib/types';
 import { toErrorMap } from '../lib/utils';
 
@@ -12,27 +15,23 @@ type NewPassword = {
     newPassword: string;
 };
 
-type Token = {
-    token: string;
-};
-
 export const ChangePassword = () => {
     const history = useHistory();
-    const { token } = useParams<Token>();
+    const [changePassword] = useChangePasswordMutation();
 
     const handleSubmit = async (
         values: NewPassword,
         setErrors: SetErrors<NewPassword>
     ) => {
-        // const res = await login({
-        //     variables: { input: values },
-        // });
-        // if (res.data?.login?.errors) {
-        //     const errors = res.data.login.errors as FieldError[];
-        //     setErrors(toErrorMap(errors));
-        // } else if (res.data?.login?.user) {
-        //     history.push('/');
-        // }
+        const res = await changePassword({
+            variables: { input: values.newPassword },
+        });
+        if (res.data?.changePassword?.errors) {
+            const errors = res.data.changePassword.errors as FieldError[];
+            setErrors(toErrorMap(errors));
+        } else if (res.data?.changePassword?.user) {
+            history.push('/');
+        }
     };
 
     return (
