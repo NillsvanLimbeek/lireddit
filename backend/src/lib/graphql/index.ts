@@ -1,4 +1,5 @@
 import { makeExecutableSchema } from 'apollo-server-express';
+import { applyMiddleware } from 'graphql-middleware';
 import merge from 'lodash.merge';
 
 import { postTypeDefs } from './post/postTypeDefs';
@@ -9,7 +10,25 @@ import { userResolvers } from './user/userResolvers';
 
 import { typeDefs } from './typeDefs';
 
-export const schema = makeExecutableSchema({
+import { isAuth } from '../middleware';
+
+const authMiddleware = {
+    Mutation: {
+        createPost: isAuth,
+        updatePost: isAuth,
+        deletePost: isAuth,
+
+        logout: isAuth,
+        forgotPassword: isAuth,
+        changePassword: isAuth,
+    },
+};
+
+const middleware = [authMiddleware];
+
+const schema = makeExecutableSchema({
     typeDefs: [typeDefs, postTypeDefs, userTypeDefs],
     resolvers: merge(postResolvers, userResolvers),
 });
+
+export const schemaWithMiddleware = applyMiddleware(schema, ...middleware);

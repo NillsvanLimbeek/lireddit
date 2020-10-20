@@ -25,10 +25,6 @@ export const postResolvers: IResolvers = {
             { input }: PostInput,
             { req }: CTX
         ): Promise<Post> => {
-            if (!req.session.userId) {
-                throw new Error('not authenticated');
-            }
-
             return await Post.create({
                 ...input,
                 creatorId: req.session.userId,

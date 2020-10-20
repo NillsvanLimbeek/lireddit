@@ -6,7 +6,7 @@ import cors from 'cors';
 import { createConnection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 
-import { schema } from './src/lib/graphql';
+import { schemaWithMiddleware } from './src/lib/graphql/index';
 import { __prod__ } from './src/lib/constants';
 
 import { config } from './src/typeorm.config';
@@ -51,7 +51,7 @@ const main = async () => {
 
     // setup graphql
     const apolloServer = new ApolloServer({
-        schema,
+        schema: schemaWithMiddleware,
         context: ({ req, res }) => ({ req, res, redis }),
     });
 

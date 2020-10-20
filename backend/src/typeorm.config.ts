@@ -8,7 +8,7 @@ export const config: ConnectionOptions = {
     password: 'postgres',
     database: 'lireddit2',
     synchronize: true,
-    logging: true,
+    logging: false,
     entities: ['src/lib/entities/**/*.ts'],
     migrations: ['src/lib/migration/**/*.ts'],
     subscribers: ['src/lib/subscriber/**/*.ts'],
