@@ -1,18 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Router, Switch, Route } from 'react-router-dom';
+
+import { customHistory } from './lib/utils';
 
 import { Home } from './views/Home';
 import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { NavBar } from './components/NavBar';
 import { ChangePassword } from './views/ChangePassword';
+import { CreatePost } from './views/CreatePost';
+import { PrivateRoute } from './components/PrivateRoute';
 
 import './tailwind.output.css';
 
 export const App = () => {
     return (
         <div className="App">
-            <Router>
+            <Router history={customHistory}>
                 <NavBar />
 
                 <Switch>
@@ -22,6 +26,7 @@ export const App = () => {
                     />
                     <Route path="/register" component={Register} />
                     <Route path="/login" component={Login} />
+                    <PrivateRoute path="/create-post" component={CreatePost} />
                     <Route path="/" component={Home} />
                 </Switch>
             </Router>
